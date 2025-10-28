@@ -151,7 +151,7 @@
 
 	2. 체크아웃	: HEAD 이동 명령어
 
-00. git checkout 령
+00. git checkout 명령
 명령 git checkout으로 HEAD를 과거 커밋 또는 다른 브랜치의 최신 커밋으로 이시키면 그 커밋에 기록된 파일의 내용을 확인할 수 있다. 
 
 	- git checkout HEAD~	: HEAD를 직전 커밋으로 이동시킨다.
