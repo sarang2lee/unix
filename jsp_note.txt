@@ -1,0 +1,3 @@
+<< JSP Programming Study note: 2025년 2학기: Dori >>
+
+01. JSP 파일은 Workspace-src-main-webapp 에서 열고 저장한다.

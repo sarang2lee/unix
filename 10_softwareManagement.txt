@@ -1,0 +1,179 @@
+제 10 장 소프트웨어 관리 (Software Manangement)
+
+소프트웨어를 설치하고 관리하려면 패키지 관리도구가 필요하다. 레드햇 계열의 리눅스 배포판서 RPM은 패키지 파일의 형식이자 기본 관리도구이며, YUM은 RPM 방법의 패키지 의존성 문제를 해결한 고수준의 관리도구이다. DNF는 YUM의 업그레이드 버전이다. 
+
+	10.1 패키지 관리
+
+00.
+일반적으로 계열이 다른 리눅스 배포판 사이에서는 소프트웨어 패키지가 호환되지 않는다. 왜냐하면 소프트웨에 패키징 방법이 다르기 때문이다. 패키징 방법은 크게 데비안 계열의 DEB(.deb) 패키지 스타일과 레드햇 계열의 RPM(.rpm) 패키지 스타일의  가지 나뉘며, 슬랙웨어(Slackware)나 젠투(Gentoo) 등은 또 다른 방법을 사용한다.
+
+   1. 패키 파일과 저장소
+
+00. 
+패키지 관리의 기본 단위는 '패키지 파일'로, 이는 프로그램 설치에 필요한 모든 구성 파일을 묶은 압축 파일이다.
+
+01.
+소프트웨어 패키지는 설치되어야 하는 바이너리 프로그램과 패키지의 메타 데이터를 포함하고 있다. 메타 데이터는 패키지의 이름이나 버전 또는 패키지에 관한 설명이나 관리를 위한 규칙, 저작자, 실행을 위해 필요한 다른 프로그램 등의 정보를 포함한다. 그리고 패키지 설치를 위한 스크립트나 설치 후 환경 설정을 위한 스크립트를 포함하기도 한다.
+
+02.
+하나의 프로그램은 실행을 위해 다른 프로그램 요소에 의존하기 마련이다. 따라서 패키지를 설치할 때 '선행 패키지'가 이미 설치되어 있거나 함께 설치해야 한다. 즉 패키지의 의존성 문제를 해결해야 한다.
+
+03.
+패키지 관리도구로는 단순히 해당 패키지 파일만 설치하거나 삭제하는 작업 수행하는 저수준의 도구도 있으나, 메타데이터를 검색하고 패키지 과정에 존재하는 의존 문제를 해결하는, 즉 필요한 선행 패키지를 함께 설치하는 고수준의 패키지 관리도구도 있다. 레드햇 계열의 배포판에서 저수준 관리도구로는 RPM(Redhat Package Manager 또는 RPM Package Manager)을 사용하며, 고수의 관리도구로는 YUM(Yellowdog UPdater, Modified)이나 DNF(Dandified YUM)를 사용한다.
+
+	
+	10.2 RPM 패키지 관리자
+
+00.
+용이한 관리를 위해 RPM 패키지 파일의 이름에는 명명 규칙이 존재하는데, 아래와 같다.
+
+	<패키지이름>-<버전-릴리스>.<배포판>.<아키텍처>.rpm	예) firefox-102.8.0-2.el9_1.x86_64.rep
+
+01.
+패키지가 설치되면 이름을 포함하여 패키지에 관한 정보가 리눅스의 'RPM 데이터베이스'에 저장되기 때문에 rpm 명령으로 패키지를 삭제 또는 업데이트하거나 패키지 정보에 관해 다양한 질의를 할 수 있다.
+
+02.
+옵션은 크게 설치를 위한 -i, 업그레이드를 위한 -U, 삭제를 위한 -e, 질의를 위한 -q로 분류되고, 그 뒤에 해당 옵션의 서브옵션 붙일 수 있다. 
+
+형식은 		rpm [opti0ns] [packages]	이다.
+
+03. 주로 사용하는 명령어 
+	rpm -qf /usr/bin/firefox	: 지정 파일을 포함하는 키디 파일을 출력한다.
+	rpm -qR firefox			: 패키지가 의존(-R)하고 있는 패키지 목록을 보여 준다.
+	rpm -ql firefox			: 설치된 패키지에 포함되어 있는 모든 파일을 나열(-l)한다.
+	rpm -qc firefox			: 설치된 패키지의 모든 설정(-c) 파일을 나열한다.
+	
+04. 패키지에는 있지만 아직 설치하지 않은(-p) 패키지 파일에 포함되어 있는 정보를 검색하기 위해서는 
+
+	rpm -qpl filename	rpm -qpR	과 같이 -p 옵션을 이용한다.
+
+
+	10.3 DNF 패키지 관리자 
+
+00.
+DNF는 'Dandified YUM'을 의미하며, 빠른 패키지 설치, 효율적인 의존성 처리, 직관적 명령과 간결한 결과 처리, 패키지 무결성 등에서 향상된 기능을 제공하는 업그레이드된 버전이다. 기존 YUM과의 호환성도 유지되는 명령 행 기반이자 저장소 기반의 고수준의 패키지 관리도구이다. 관리자 권한을 가지고 있어 DNF를 이용하여 패키지를 설치, 업데이트, 삭제할 수 있다.
+
+  1. dnf 명령
+
+01. DNF 명령의 기본 사용은 다음과 같다.
+
+	dnf [options] command
+
+02. DNF 명령에서 용되 서브 명령은 다음과 같다.
+
+	check-update [packages]
+	list [options] [packages]
+	install packges
+	reinstall packages
+	search [--all] string [strings]
+	repoquery [options] packages
+	deplist [options] packages	: 지정된 패키지가 의존하는 요소와 그것을 제공하는 패키지를 나열한다.
+ 	upgrade [packages]		: package를 지정하지 않으면, 설치된 모든 패키지가 업데이트 된다.
+	remove [packages]		: 지정된 패키지와 지정된 패키지에 의존하는 파일도 삭다.
+	info [options] [packages]	: 지정된 패키지 또는 지정되지 않은 경우 모든 패키지의 정보를 출력한다.
+	repolist [options]		: 저장소에 목록을 나열한다. --all, --disabled도 있다.
+	repolist [options]		: 저장소에 관한 자세한 정보를 확인한다. repolist -v와 유사하다.
+	group list [options] [groups]	: 알려진 모든 패키지 그룹을 나열한다.  --installed, --available, --hidden 옵션 있다.
+
+03. 주요 명령어
+
+	dnf info emacs		dnf list intalled emacs		dnf deplist emacs | more
+	dnf remove emacs	dnf history		dnf history info 5
+	dnf history undo 5
+	
+  2. 설정 파일
+
+00. 
+dnf 명령이 기본 설정 파일은 /ect/dnf/dnf.conf 이다. 즉 명령을 실행하면 먼저 이 설정 파일에 있는 기본 설정 확인한다.
+이 파일에는 [main] 섹션이 있는데, dnf 명령을 수행하는 데 필요한 전역 설정 옵션이 존재한다.
+
+01. 	[202434-243396@localhost ~]$ cat /etc/dnf/dnf.conf 의 내용
+
+	[main]						: 전역 설정 옵션
+	gpgcheck=1					: GPG 서명 검사 여부를 지정(0은 false, 1은 true)
+	installonly_limit=3		: 업데이트되지 않은 '설치전용 패키의 동시 보관되는 버전 갯수 지정(기본 3)
+	clean_requirements_on_remove=True	: 해당 패키지만이 유일하게 필요로 하는 다른 패키지의 자동 삭제 여부
+	best=True				: 가능한 가장 최신의 버전을 설치할 것인지를 지정
+	skip_if_unavailable=False	: 업그레이드 때 사용 불가한 저장쇼과 있더라도 무시할 것인지를 지정
+
+
+02.
+'baseos'와 'appstream'는 Rocky Linux나 CentOS와 같은 리눅스 배포판에서 기본적으로 제공되는 주요 저장소이다.
+'baseos' 저장소는 리눅스 배포판의 기본 시스템 기능을 제공하는 패키지로 커널 및 시스템 라이브러리, 령 행 유틸리티 등이 포함되어 있다.
+'appstream' 저장소 응용 프로그램 및 라이브러리 패키지를 제공한다. 
+
+03. 주요 명령어
+
+	cat etc/dnf/dnf.conf
+	dnf repolist --enabled
+	cat /etc/yum.repos.d/rocky.repo
+	dnf -v repolist --enabled
+
+
+	10.4 압축
+
+  1. 파일 압축명령: gzip, bzip2
+
+00.
+gzip은 압축 파일의 형식이자 파일의 압축과 해제에 사용되는 리눅스 프로그램을 말한다. tar는 단순하게 파일을 묶어 주는 아카이브(archive) 기능만 제공하는 것과는 차이가 있다. 물론 tar 명령에서 제공하는 -z 옵션을 사용하면 아카이브를 만들면서 gzip을 사용하여 압축할 수 있다. 기본 사용법은 다음과 같다.
+
+	gzip [options] [files]
+
+01.
+gzip 명령을 사용하여 압축하면 원본 퍄일은 없어지고, 원본 파일과 이름은 같으며 .gz이라는 확장자를 가진 압축 파일이 만들어진다. 이때 압축 파일의 접근권한이나 파일 속성은 그대로 유지된다. gzip 명령에서 -number 옵션을 사용할 수 있는데, 숫자는 압축률을 의미하며 1~9 사이의 숫자이다. 기본값은 6으로 주어지며, 1은 압축률이 가장 낮으나 압축 속도는 가장 빠르다.
+
+02. gzip 명령의 옵션
+	-c	: 결과를 표준출력으로 보내고 원본 파일은 그대로 유지된다.
+	-d	: 압축 풀 때 하며 gunzip 명령과 같다
+	-r	: 인수로 디렉터리가 주어질 때 디렉터리에 포함된 것을 재귀적으 탐색하여 압축한다.
+	-t	: 압축 파일의 무결성을 검사한다.
+	-v-number	: 압축율을 의미한다.
+
+03. gzip과 gunzip 명령의 사용 례
+
+	gzip foo.txt	: 압축 파일 foo.txt.gz이 만들어진다. 원본 파일 foo.txt는 없어진다.
+	gzip -tv foo.txt.gz	: 압축 파일의 무결성을 검사하고 결과를 출력한다. 
+	gzip -d foo.txt.gz	: 압축을 풀고 파일이 다시 만들어진다. 압축 파일은 없어진다.
+	gzip *.txt		: 확장자가 .txt인 모든 파일에 대해 개적으로 압축 파일이 만들어진다.
+	gzip -d *.gz 또는 gunzip *.gz	: 모든 압축 파일을 풀고 원본 파일을 만든다.
+	gzip -c file1 > bar.gz -->  gzip -c file2 >> bar.gz: file1을 압축하여 bar.gz를 만들고 bar.gz에 file2를 추가한다.	gunzip -c bar.gz 또는 gunzip -c anr	
+	  : 이것은 압축을 풀고 결과를 표준출력으로 보내므로 cat filer1 file2 또는 zcat bar.gz과 같다. 
+            기존 압축 파일은 그대로 유지된다.
+
+	gzip -c file1 file2 > bar.gz	: 두 파일을 각각 압축한 후 연결시켜 압축파일 bar.gz를 만든다.
+	cat file1 file2 | gzip > bar.gz	: 두 파일 한꺼번에 압축하여 압축 파일 bar.gz을 만든다. 
+
+04.
+bzip2 명령은 gzip 과 유사하나, 파일 분석을 통해 효율적으로 압축하는 Burrows-Wheeler라는 블록 정렬 알고리즘을 사용한다. 일반적으로 gzip보다 압축 속도는 느리지만 압축 효율이 좋은데,  특히 같은 문자가 자주 반복되는 텍스트 파일이나 이미지 파일에서 압축 효율이 뛰어나다.
+
+  2. 아카이브 명령: tar
+
+00. 
+tar는 'tape archive'를 줄인 말로 테이프 관련 장치를 이용하여 파일을 백업할 때 사용하는 명령이었으며, 현재는 주어진 여러 개의 파일을 하나의 아카이브 파일로 묶거나 아카이브 파일을 원래의 파일로 풀어 주는 명령으로 사용된다. 묶어 줄 대상으로 파일 대신 디터리 지정하면 그 디렉터리에 있는 모든 파일과 서브디렉터리까지 함께 묶어 준다.
+
+01.
+GNU의 tar 명령은 옵션을 사용하여 파일로 묶거나 풀 때 압축 관련 작업을 동시에 진행할 수 있다. 아카이브 파일로 묶을 때 어떤 압축 명령을 사용하느냐에 따라 compress를 이용하는 경우(-Z 옵션) 확장자는 .tarZ이고, gzip을 이용하는 경우(-z 옵션) 확자는 tar.gz이며, bzip2를 사용하는 경우(-j 옵션) 확장자는 .tar.bz2이다.
+
+02. tar 명령의 사용법과 옵션은 다음과 같다.
+
+	tar mode [options] [tarfile] [pathnames...]
+	
+03. 여기서 tarfile은 아카이브를 의미한다.tar 명에서 사용되는 모드는 다음과 같다. tar 명령에서는 대시(-)를 사용하지 않는 것이 보통이다. 
+
+	A	: tar 파일을 아카이브에 추가한다.
+	c	: 파일 또는 아카이브로부터 아카이브를 만든다.
+	x	: 아카이브에서 파일을 추출한다. 
+	r	: 아카이브 뒤에 파일을 추가한다.
+	t	: 아카이브에 포함되어 있는 파일 목록을 출력한다.
+
+04. tar 명령 사용 예
+	
+	tar cvf foo.tar *.c	: 현재 디렉터에서 .c로 끝나는 모든 파일을 foo.tar로 묶어 만들고(c) 진행 결과를 출력한다.
+	tar tvf foo.tar		: 아카이브 foo.tar에 있는 파일 목록을 출력(t)한다.
+	tar xvf foo.tar		: 현재 디렉터리에 아카이브 foo.tar를 푼다(x).  
+	tar cvf bar.tar backup/	: 디렉터리 backup 내용을 묶어 아카이브 bar.tar를 만든다.
+	tar cvfz bar.tar.gz backup/	: 위와 같으나 아카이브를 만들 때 gzip을 이용한다.
+	tar xvfz bar.tar.gz	: gzip으로 압축된 아이브를 푼다(x).
+	tar cvf - 'find . -print' > backup.tar
+		: 명령 확장을 통해 find 명령을 사용하여 현재 디렉터리의 모든 파일과 서브디렉터 각각을 묶어 
+		  아카이브(- 표준출력)를 만드는데, 리다이렉션을 사용하여 backup.tar 아카이브를 만든다.
