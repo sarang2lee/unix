@@ -1,0 +1,201 @@
+제 13 장 브랜치의 생성과 병합
+
+	13.1 브랜치의 개요
+
+버전 관리를 수행하던 일련의 일련의 파일 집합을 통째로 복사한 다음, 거기로부터 독립적으로 특별한 개발을 진행하는 개념이 브랜치이다. 어느 순간 필요하다면 브랜치를 생성할 수 있고, 또한 생성된 브랜치는 전 브랜치와 합쳐질 수 있는데, 브랜치를 합치는 것을 병합(merge)이라 한다. 예를 들어 test 브랜치가 main 브랜치에 병합되는 경우, test 브랜치에서 커멋에 기록된 변경 사항이 main 브랜의 상응하는 파일에 적용된다는 의미이다. 깃을 사용하면 브랜치의 생성과 삭제, 브랜치 간의 이동이나 병합 등의 작업을 편리하 수행할 수 있다.
+
+00.
+깃의 브랜치는 커밋 사이르 이동할 수 있게 하는 포인터라고 할 수 있다. 처음 커밋하면 main 브랜치는 생성된 커밋을 가리킨다. HEAD는 현재 작업 중인 브랜치리르 가리키는 포인터이다. (HEAD -> main)는 'main은 마지막 커밋을 가리키고, HEAD는 현재 작업 브랜치인 main을 가리킨다는 의미이다.
+
+01. 브랜치의 생성과 확인
+
+	git branch 또는 gir branch --list	: 기본 브랜치의 이름을 나열한다.
+	git branch -v				: 기존 브랜치마다 상세한 정보를 나열한다.
+	git branch newBranchName		: 주어진 인자로 브랜치를 생성하나 HEAD는 이동되지 않는다.
+	git switch -c newBranchName		: 주어진 인자로 브랜치를 생성하고 HEAD를 이동시킨다.
+	git checkout -b newBranchName		: 주어진 인자로 브랜치를 생성하고 HEAD를 이동시킨다.
+
+02.
+브랜치 명령의 결과에서 * 기호는 '현재 브랜치'를 나타낸다. 
+
+03. 작업 브랜치의 이동 명령어는 git switch	또는	git checkout	이다.
+
+	git switch brabch	: 주어진 브랜치로 HEAD를 이동시킨다.
+	git checkout branch	: 주어진 브랜치로 HEAD를 이동시킨다.
+	
+	git switch  -		: -는 직전 브랜치로 HEAD를 이동시킨다.		
+	git checkout  -		: -는 직전 브랜치로 HEAD를 이동시킨다.		
+	
+	git checkout commit	: 주어진 커밋으로 HEAD를 이동시킨다.
+
+03. 이전 커밋으로의 이동 명령
+현재 브랜치의 마지막 커밋에서 이전 커밋으로 이동하려면	go checkout	을 사용할 수 있다. 이때 '분리된(detached) HEAD'가 된다. 옵션 -d(또는 --detach)를 사용해야 하며, 인자로 HEAD~, HEAD^^, 커밋 아이디 등을 용한다..
+
+	git checkout [-d] HEAD~	: HEAD가 분리되어 HEAD~로 이동한다.
+	git switch -d HEAD	: HEAD가 분리되어 HEAD~로 이동한다.
+	git switch -d [commit]	: HEAD가 분리되어 주어진 커밋으로 이동한다
+	
+
+	13.2 브랜치 관리
+
+	1. 작업 브랜치 만들기와 커밋 이력 
+
+00.
+분리된(detached) 브랜치(topic)에 HEAD가 위치한 상태에서 생성 commit은 HEAD가 main으로 복귀하면, 다른 이력으로 main commit 이력으로 보이지 않는다.
+
+01.
+git log 명령에서 --oneline --graph --all 옵션을 사용하여 커밋 이력을 표시하면, 커밋 B에서 커밋 메시지가 2개의 커밋으로 분기된 것을 볼 수 있다.
+
+02.
+1) 명령 git switch -c(또는 --create)로 브랜치 hotfix를 만들고, 성공하면 HEAD가 hotfix로 이동한다. 이후 get checkout -b로 브랜치 develop을 만든다
+
+	git switch -c hotfix	: hotfix 브랜치를 만들고 HEAD를 거기로 이동
+	git checkout -b develop	: develop 브랜치를 만들고 HEAD는 그대로 유지	-> 이로써 topic main hotfix develip 4개의 브랜치가 생겼다.
+
+	2. 브랜치의 삭제 
+
+01. 
+git branch 명령에서 현재 체크아웃한 브랜치를 기준으로 브랜치의 병합 여부를 --merged와 --no-merged로확인할 수 있다. --merged 옵션은 안전하게 삭제할 수 있는 브랜치를 찾는 데 사용되고, --no-merged 옵션은 HEAD에 병합 후보 브랜치를 찾는 데 사용된다.
+
+	git branch --merged	: 현재 작업 브랜치를 기준으로 병합된(도달 가능한) 브랜치 목록을 표시한다.
+	git branch --no-merged	: 현재 작업 브랜치를 기준으로 아직 병합되지 않은(도달 불가한) 브랜치 목록을 표시한다.
+
+	git branch --merged branchName		: 주어진 브랜치를 기준으로 병합된(도달 가능한) 브랜치 목록을 표시한다.
+	git branch --no-merged branchName	: 주어진 브랜치를 기준으로 아직 병합되지 않은(도달 불가한) 브랜치 목록을 표시한다.
+
+02.
+브랜치 삭제는 git branch 명령에서 옵션 -d(또는 --delete)를 사용한다.
+
+	git branch -d branchName	: 지정한(이미 병합된) 브랜치를 삭제한다.
+	git branch -D branchName	: 지정한(병합되지 않았더라도) 브랜치를 삭제한다.
+
+03.
+HEAD를 main 브랜치로 이동한 후 git branch --merged 명령을 실행하 삭제 가능한, 즉 topic을 제외한 이미 병합된 모든 브랜치가 출력된다. 여기서 hotfix를 삭제해 보자.
+	
+	git switch main		: main 브랜치로 전환
+	git branchg --merged	: 병합된 브랜치 목록 표시 --> main hotfix develop은 보이지만, 이미 분기된 topic은 리스트에 보이지 않는다.
+	git branch -d hotfix	: hotfix 브랜치 삭제
+	git log --oneline --graph --all
+
+
+	13.3 브랜치의 병합 
+
+	1. fast-forward 병합
+
+00.
+병합이란 두 개의 브랜치를 합치는 것을 말한다. 뒤에 있는 (조상) 브랜치를 앞에 있는 (자손) 브랜치 위치로 이동하는 것을 'fast-forward(빨리감기) 병합'이라 한다. fast-forward 병합은 단순히 HEAD가 위치한 현재 브랜치를 앞로 이동시켜 병합하는 것이다. 이는 병합할 대상 자손 브랜치의 커밋 이력이 조상 브랜치의 커밋 이력을 모두 포함하는 경우이다. git merge childBranch 명령을 사용하며, 인자로는 현재 브랜치가 이동하는 지점에 해당하는 자손 브랜치이다. 병합 후에는 HEAD 이동되므로 현의 작업영역과 스테이지 영역도 업데이트된다.  
+
+
+	2. 3-way 병합
+
+00.
+두 브랜치가 한 커밋에서 갈라져 나온 상태를 3-way 상태라 한다. 이처럼 갈라진 2개의 브랜치를 하나로 합치는 것을 3-way 병합이라고 한다. 3-way 병합도 git merge 명령을 용한다. 옵션을 사용하지 않나 -e를 사용하면 새로운 병합 커밋의 메시지를 편집해야 한다. 옵션 -m을 사용하여 커밋 메시지를 직접 입력할 수도 있다.
+
+	git merge [-e] branch	: 현재 브랜치에 대상 브랜치 3-way 병합시킨다. 커밋 메시지 편집을 위해 편집기가 열리며, 
+				  "Merge branch 'branch'가 자동삽입되어 있다. 	ex) git merge topic	: topic 브랜치를 현재 브랜치에 통합
+	git merge -m 'message' branch	: 병합하면서 새로 생성되는 커밋의 메시지를 지정한다.
+
+01.
+3-way 병합 결과, 분리되었던 topic 브랜치가 다시 main과 합쳐진다. go branch --merged	명령으로 병합이 완료된 브랜치 목록을 확인할 수 있다. 병합이 완료된 브랜치 git branch -d 명령으로 삭제할 수 있다.
+
+02.
+명령 git reset --hard HEAD~ 로 3-way 병합 이전 상태로 되돌릴 수 있다.
+
+	git reset --hard HEAD~
+
+03.
+topic 브랜치에서 main 브랜치를 병합하기. 먼저 HEAD를 topic 브랜치로 이동한다. 
+
+	git switch topic	: HEAD를 topic 브랜치로 전환
+	git branch --no-merged	: 아직 병합되지 않은 즉 병합할 브랜치가 있는지 확인. main 브랜치가 보인다.
+	git merge -e main	: main 브랜치를 topic 브랜치에 통합한다. 
+
+04.
+main 브랜치가 topic 3-way 병합되었으므로 main 브랜치를 topic 위치로 이동시키기 위해 fast-forward 병합을 수행할 수 있다. 따라서 작업 브랜치를 다시 브랜치 main으로 이동시킨 후 topic 브랜치를 대상으로 fast-forward 병합을 수행한다. 그리고 현재 브랜치 main을 topic 커밋으로 이동시키기 위해 fast-forward 병합을 수행한다. 이때는 커밋이 발생하지 않다.
+
+	git branch --merged	: 현재 브랜치를 기준으로 병합된 브랜치 목록을 확인한다.
+	git switch main		: 작업 브랜치를 main으로 전환
+	git merge topic		: topic 브랜치를 main에 fast-forward 통합
+	
+05. 
+작업 브랜치를 topic으로 전환하자.  파일 noff.txt를 만들어 인덱스에 추가하고 커밋하자. 파일 noff.txt가 추가되었으니, 이제 파일이 총 5개 존재한다. 커밋 이력을 확인한다.
+
+	git switch topic
+	touch noff.txt
+	git add noff.txt
+	git commit -m topic-2
+	ls
+	git log --oneline --graph --all
+	
+06.
+다시 브랜치를 main 으로 전환하자. 이 상태에서 topic 브랜치를 대상으로 병합하면 기본이 fast-forward 병합인 상태이다. 만약 이 상황에서 3-way 병합을 수행하려면 옵션 --no-ff 사용하면 된다. 끝으로 커밋 이력을 확인한다.
+
+	git switch main
+	git merge --no-ff topic -m D
+	git log --oneline --graph --all
+
+07.
+다시 HEAD를 topic 브랜치로 전환한 후, topic 브랜치를 main 위치로 이동하기 위헤 fast-forward 병합을 수행한다. main 과 topic  모두 마지막 커밋을 가리킬 것이다. 다시 브랜치를 main 으로 전환한다. 
+
+	git switch topic
+	git merge main
+	git log --oneline --graph --all
+
+	git switch main
+	git log __oneline --graph --all
+
+08.
+다시 브랜치를 topic 으로 이동시키자. 브랜치 topic에서 파일 sq.txt를 만들어 커밋하자. 그리고 브랜치 topic에서 sq.txt를 수정해 다시 한번 커밋하자.
+
+	git switch topic
+	touch sq.txt
+	git add sq.txt
+	git commit -m "topic-3 (add sq.txt)"
+	git log --oneline --graph --all
+
+	echo squash >> sq.txt
+	git commit -am "topic-4 (revised sq.txt)"
+	git log --oneline --graph --all
+	 
+
+09. 
+이번에는 main으로 이동해서 README를 수정한 후 커밋하자. 그리고 git log 명령으로 지금까지의 커밋 이력을 살펴보자.
+
+	git switch main
+	echo squash >> README
+	git commit -am E(commit after revising README)
+	git log --oneline --graph --all
+
+10.
+이제 브랜치 main 과 topic은 3-way 상태이다. 다음 예에서 옵션 --squash 로 병합해 보자. 이를 수행하면 topic에서 만든 파일 sq.txt를 합쳐 커밋 전 단계까지 수행된다. 그러므로 git status 명령의 결과를 보면 파일 sq.txt 이 새 파일로 인덱스에 추가되었다. 커밋은 직접 수행해야 한다. 브랜치 main에 브랜치 topic에 기록된 변경 내용이 합쳐진 마지막 커밋이 추가로 생성된 것을 볼 수 있다. 이제 main 브랜에서 topic-4에서 기록되었던 파일 sq.txt의 수정 내용을 확인할 수 있다.
+
+	git merge topic --squash
+	git status
+	git commit -m 'F: squash merge'
+	git log --oneline --graph --all
+
+	ls
+	cat sq.txt  
+
+
+	13.4 브랜치 병합 충돌과 해결
+
+00. git switch 명령에서 브랜치 생성을 위한 옵션
+
+	git switch -c newBranch HEAD~	: 현재 커밋의 직전 커밋(HEAD~)에서 새로운 브랜치를 생성하고 HEAD를 이동시킨다.
+	git switch -c newBranch commit	: 주어진 커밋에서 새로운 브랜치를 생성하고 HEAD를 이동시킨다.
+
+	git log --oneline --graph -1
+	git switch -c release HEAD~
+	git log --oneline --graph --all -2
+
+01.
+충돌이 일어난 파일은 '병합하지 않은 경로(unmerged paths)'에서 표시된다. 
+충돌을 해결하려면 개발자가 해당 부분을 직접 편집하여 히결한다. 다만 '<<<<<<<<<', '==========', '>>>>>>>>>'가 포함된 행을 삭제해야 한다. 
+
+
+
+
+	
+
+
